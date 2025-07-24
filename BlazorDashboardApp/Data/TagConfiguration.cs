@@ -25,6 +25,7 @@ namespace BlazorDashboardApp.Data
 
 
             builder.Property(t => t.IsDeleted)
+                    .HasDefaultValue(false)
                    .IsRequired();
             builder.Property(t => t.DeletedDate);
             builder.Property(t => t.DeletedByUserId)

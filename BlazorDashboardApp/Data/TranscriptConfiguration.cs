@@ -17,7 +17,7 @@ namespace BlazorDashboardApp.Data
             builder.HasKey(k => k.Id);
             builder.Property(t => t.TranscriptString)
                    .IsRequired()
-                   .HasMaxLength(32);
+                   .HasMaxLength(128);
             builder.HasOne(t => t.Data)
                    .WithMany(f => f.Transcript)
                    .HasForeignKey(t => t.DataId)
@@ -25,6 +25,7 @@ namespace BlazorDashboardApp.Data
 
 
             builder.Property(t => t.IsDeleted)
+                    .HasDefaultValue(false)
                    .IsRequired();
             builder.Property(t => t.DeletedDate);
             builder.Property(t => t.DeletedByUserId)
