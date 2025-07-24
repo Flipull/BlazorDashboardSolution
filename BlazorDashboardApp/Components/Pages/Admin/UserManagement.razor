@@ -1,0 +1,186 @@
+﻿@page "/UserManagement"
+@rendermode InteractiveServer
+
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Roles = "Admin")]
+
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<IdentityUser> UserManager
+@inject RoleManager<IdentityRole> RoleManager
+@inject NavigationManager NavigationManager
+
+<PageTitle>User Management</PageTitle>
+
+<h1>User Management</h1>
+
+@if (users == null)
+{
+    <p>Loading users...</p>
+}
+else
+{
+    <table class="table-auto border w-full mb-8">
+        <thead class="bg-gray-100">
+            <tr>
+                <th class="border p-2 text-left">Email</th>
+                <th class="border p-2 text-left">Roles</th>
+                <th class="border p-2">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var user in users)
+            {
+                <tr>
+                    <td class="border p-2">@user.Email</td>
+                    <td class="border p-2">@string.Join(", ", userRoles[user])</td>
+                    
+                    @if (userRoles[user].Contains("Admin"))
+                    {
+                        <td class="border p-2 text-center">
+                            <button class="px-2 py-1 ml-2 rounded bs-gray-300 text-white" onclick="">Reset Password</button>
+                            <button class="px-2 py-1 ml-2 rounded bs-gray-300 text-white" onclick="">Make Editor</button>
+                            <button class="px-2 py-1 ml-2 rounded bs-gray-300 text-white" onclick="">Delete</button>
+                        </td>
+                    }
+                    else
+                    {
+                    <td class="border p-2 text-center">
+                            <button class="px-2 py-1 btn btn-primary" @onclick="() => GenerateResetLink(user)">Reset Password</button>
+                            <button class="px-2 py-1 btn btn-primary" @onclick="() => AssignEditorRole(user)">Make Editor</button>
+                            <button class="px-2 py-1 btn btn-primary" @onclick="() => DeleteUser(user)">Delete</button>
+                        </td>
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+<br />
+<h2 class="text-xl font-semibold mb-2">Create New User</h2>
+
+<div class="mb-4 space-y-2">
+    <input type="email" placeholder="Email" @bind="newEmail" class="border px-2 py-1 rounded w-1/3" />
+    <input type="password" placeholder="Password" @bind="newPassword" class="border px-2 py-1 rounded w-1/3" />
+    <button class="btn btn-primary" @onclick="CreateUser">Create</button>
+</div>
+
+@if (!string.IsNullOrEmpty(statusMessage))
+{
+    <p class="text-green-600">@statusMessage</p>
+}
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <p class="text-red-600">@errorMessage</p>
+}
+
+@code {
+    private List<IdentityUser> users;
+    private Dictionary<IdentityUser, List<string>> userRoles;
+    private string newEmail;
+    private string newPassword;
+    private string statusMessage;
+    private string errorMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        //await EnsureRoleExists("Editor");
+        await LoadUsers();
+    }
+
+    private async Task LoadUsers()
+    {
+        var userlist = UserManager.Users.ToList(); // You can ToListAsync() if needed
+
+        var userrolelist = new Dictionary<IdentityUser, List<string>>();
+        foreach (var user in userlist)
+        {
+            var roles = (await UserManager.GetRolesAsync(user)).ToList();
+            userrolelist.Add(user, roles);
+        }
+        userRoles = userrolelist;
+        users = userlist;
+    }
+
+    private async Task CreateUser()
+    {
+        errorMessage = statusMessage = string.Empty;
+
+        if (string.IsNullOrWhiteSpace(newEmail) || string.IsNullOrWhiteSpace(newPassword))
+        {
+            errorMessage = "Email and password are required.";
+            return;
+        }
+
+        var user = new IdentityUser { UserName = newEmail, Email = newEmail };
+        var result = await UserManager.CreateAsync(user, newPassword);
+
+        if (result.Succeeded)
+        {
+            await AssignEditorRole(user);
+            statusMessage = $"User '{newEmail}' created.";
+            newEmail = newPassword = string.Empty;
+            await LoadUsers();
+        }
+        else
+        {
+            errorMessage = string.Join("; ", result.Errors.Select(e => e.Description));
+        }
+    }
+
+    private async Task AssignEditorRole(IdentityUser user)
+    {
+        var editorRole = "Editor";
+        if (!await UserManager.IsInRoleAsync(user, editorRole))
+        {
+            await UserManager.AddToRoleAsync(user, editorRole);
+            statusMessage = $"Assigned role '{editorRole}' to {user.Email}.";
+            await LoadUsers();
+        }
+        else
+        {
+            statusMessage = $"{user.Email} is already in role '{editorRole}'.";
+        }
+    }
+
+    private async Task GenerateResetLink(IdentityUser user)
+    {
+        var token = await UserManager.GeneratePasswordResetTokenAsync(user);
+        var url = $"{NavigationManager.BaseUri}Identity/Account/ResetPassword?userId={user.Id}&code={Uri.EscapeDataString(token)}";
+        await JS.InvokeVoidAsync("navigator.clipboard.writeText", url);
+        statusMessage = $"Reset link copied to clipboard for {user.Email}.";
+    }
+
+    private async Task DeleteUser(IdentityUser user)
+    {
+        if (await UserManager.IsInRoleAsync(user, "Admin"))
+        {
+            errorMessage = $"Failed to delete Admin-user {user.Email}.";
+            return;
+        }
+
+        var result = await UserManager.DeleteAsync(user);
+        if (result.Succeeded)
+        {
+            statusMessage = $"User {user.Email} deleted.";
+            await LoadUsers();
+        }
+        else
+        {
+            errorMessage = $"Failed to delete {user.Email}.";
+        }
+    }
+
+    /*
+    private async Task EnsureRoleExists(string role)
+    {
+        if (!await RoleManager.RoleExistsAsync(role))
+        {
+            await RoleManager.CreateAsync(new IdentityRole(role));
+        }
+    }
+    */
+
+    [Inject]
+    private IJSRuntime JS { get; set; }
+}
