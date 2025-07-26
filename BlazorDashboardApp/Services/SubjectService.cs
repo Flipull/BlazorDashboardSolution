@@ -43,8 +43,11 @@ namespace BlazorDashboardApp.Services
         }
         public IQueryable<SubjectViewModel> GetAllQueryable()
         {
-            var subjectQueryable = repository.Subject.Select(s => subjectViewModelMapper.Map(s)).AsQueryable();
-            return subjectQueryable;
+            var subjectViewModelQueryable
+                = repository.Subject.OrderBy(s => s.Name)
+                                    .Select(s => subjectViewModelMapper.Map(s))
+                                    .AsQueryable();
+            return subjectViewModelQueryable;
         }
         
         public async Task<SubjectViewModel> Create(SubjectViewModel subjectvm)
@@ -54,7 +57,7 @@ namespace BlazorDashboardApp.Services
 
             //origfilename = subjectvm.UploadablePhoto.Name
             var photoFileName = CreatePhotoFilenameComplete(subjectvm);
-            var photoFilePath = Path.Combine(Constants.PhotoFileDirectory, photoFileName);
+            var photoFilePath = Path.Combine(Constants.LocalPhotoFileDirectory, photoFileName);
             var collissions = await repository.Subject.Where(s => s.Photofile == photoFileName).Take(1).ToListAsync();
 
             if (collissions.Count > 0)
@@ -136,7 +139,7 @@ namespace BlazorDashboardApp.Services
             if (subject is null)
                 throw new ArgumentException();
 
-            File.Delete(Path.Combine(Constants.PhotoFileDirectory, subject.Photofile));
+            File.Delete(Path.Combine(Constants.LocalPhotoFileDirectory, subject.Photofile));
 
             repository.Subject.Remove(subject);
             repository.SaveChanges();
