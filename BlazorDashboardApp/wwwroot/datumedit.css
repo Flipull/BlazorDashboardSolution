@@ -1,0 +1,49 @@
+﻿#datumpreview {
+    background-color: aquamarine;
+    /*
+    height: 320px;
+    width: 570px;
+    width: 100%;
+    height: 320px;
+    display: block;
+    margin: auto;
+    */
+    margin: auto;
+    height: 240px;
+    width: 427px;
+}
+.videopreview {
+    display: block;
+    height: 240px;
+    width: 427px;
+}
+#tagedit {
+
+}
+#taglist > .taglistitem {
+    background-color: lavender;
+    display: inline-flex;
+}
+#taglist > .taglistitem > button {
+    border: 0px;
+    background-color: lavender;
+    color: red;
+    align-self: flex-end;
+}
+
+#transcriptedit {
+}
+
+#transcriptlist > .transcriptlistitem {
+    background-color: lavender;
+    display: flex;
+}
+    #transcriptlist > .transcriptlistitem > .transcriptlisttext {
+        width: 100%;
+    }
+#transcriptlist > .transcriptlistitem > button {
+    border: 0px;
+    background-color: lavender;
+    color: red;
+    float: right;
+}
