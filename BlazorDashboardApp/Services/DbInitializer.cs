@@ -30,7 +30,7 @@ namespace BlazorDashboardApp.Services
 
             // 2. Create user if not exists
             var adminUser = await userManager.FindByEmailAsync(adminEmail);
-            if (adminUser == null)
+            if (adminUser is null)
             {
                 adminUser = new IdentityUser
                 {

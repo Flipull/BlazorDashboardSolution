@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BlazorDashboardApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250724160724_Second")]
-    partial class Second
+    [Migration("20250725185857_First")]
+    partial class First
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,7 +25,7 @@ namespace BlazorDashboardApp.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("BlazorDashboardApp.Data.Data", b =>
+            modelBuilder.Entity("BlazorDashboardApp.Data.Datum", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -51,7 +51,9 @@ namespace BlazorDashboardApp.Migrations
                         .HasColumnType("nvarchar(16)");
 
                     b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<int>("SubjectId")
                         .HasColumnType("int");
@@ -62,7 +64,7 @@ namespace BlazorDashboardApp.Migrations
 
                     b.HasIndex("SubjectId");
 
-                    b.ToTable("Data", (string)null);
+                    b.ToTable("Datum", (string)null);
                 });
 
             modelBuilder.Entity("BlazorDashboardApp.Data.Subject", b =>
@@ -101,7 +103,7 @@ namespace BlazorDashboardApp.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("DataId")
+                    b.Property<int>("DatumId")
                         .HasColumnType("int");
 
                     b.Property<string>("DeletedByUserId")
@@ -112,7 +114,9 @@ namespace BlazorDashboardApp.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<string>("TagString")
                         .IsRequired()
@@ -121,7 +125,7 @@ namespace BlazorDashboardApp.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DataId");
+                    b.HasIndex("DatumId");
 
                     b.HasIndex("DeletedByUserId");
 
@@ -136,7 +140,7 @@ namespace BlazorDashboardApp.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("DataId")
+                    b.Property<int>("DatumId")
                         .HasColumnType("int");
 
                     b.Property<string>("DeletedByUserId")
@@ -147,16 +151,18 @@ namespace BlazorDashboardApp.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
 
                     b.Property<string>("TranscriptString")
                         .IsRequired()
-                        .HasMaxLength(32)
-                        .HasColumnType("nvarchar(32)");
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DataId");
+                    b.HasIndex("DatumId");
 
                     b.HasIndex("DeletedByUserId");
 
@@ -361,7 +367,7 @@ namespace BlazorDashboardApp.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("BlazorDashboardApp.Data.Data", b =>
+            modelBuilder.Entity("BlazorDashboardApp.Data.Datum", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "DeletedByUser")
                         .WithMany()
@@ -369,7 +375,7 @@ namespace BlazorDashboardApp.Migrations
                         .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("BlazorDashboardApp.Data.Subject", "Subject")
-                        .WithMany("Data")
+                        .WithMany("Datum")
                         .HasForeignKey("SubjectId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
@@ -381,9 +387,9 @@ namespace BlazorDashboardApp.Migrations
 
             modelBuilder.Entity("BlazorDashboardApp.Data.Tag", b =>
                 {
-                    b.HasOne("BlazorDashboardApp.Data.Data", "Data")
+                    b.HasOne("BlazorDashboardApp.Data.Datum", "Datum")
                         .WithMany("Tags")
-                        .HasForeignKey("DataId")
+                        .HasForeignKey("DatumId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
@@ -392,16 +398,16 @@ namespace BlazorDashboardApp.Migrations
                         .HasForeignKey("DeletedByUserId")
                         .OnDelete(DeleteBehavior.NoAction);
 
-                    b.Navigation("Data");
+                    b.Navigation("Datum");
 
                     b.Navigation("DeletedByUser");
                 });
 
             modelBuilder.Entity("BlazorDashboardApp.Data.Transcript", b =>
                 {
-                    b.HasOne("BlazorDashboardApp.Data.Data", "Data")
+                    b.HasOne("BlazorDashboardApp.Data.Datum", "Datum")
                         .WithMany("Transcript")
-                        .HasForeignKey("DataId")
+                        .HasForeignKey("DatumId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
@@ -410,7 +416,7 @@ namespace BlazorDashboardApp.Migrations
                         .HasForeignKey("DeletedByUserId")
                         .OnDelete(DeleteBehavior.NoAction);
 
-                    b.Navigation("Data");
+                    b.Navigation("Datum");
 
                     b.Navigation("DeletedByUser");
                 });
@@ -466,7 +472,7 @@ namespace BlazorDashboardApp.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("BlazorDashboardApp.Data.Data", b =>
+            modelBuilder.Entity("BlazorDashboardApp.Data.Datum", b =>
                 {
                     b.Navigation("Tags");
 
@@ -475,7 +481,7 @@ namespace BlazorDashboardApp.Migrations
 
             modelBuilder.Entity("BlazorDashboardApp.Data.Subject", b =>
                 {
-                    b.Navigation("Data");
+                    b.Navigation("Datum");
                 });
 #pragma warning restore 612, 618
         }
