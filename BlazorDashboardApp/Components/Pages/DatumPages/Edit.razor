@@ -1,6 +1,7 @@
 ﻿@page "/datum/edit"
 @rendermode InteractiveServer
 
+@using BlazorDashboardApp.Globals
 @using Microsoft.AspNetCore.Authorization
 @attribute [Authorize(Roles = "Editor")]
 
@@ -54,9 +55,16 @@ else
 
     <div class="my-4">
         <div id="datumpreview">
-            <video class="videopreview" height="320" width="570" controls>
-                <source src="" type="video/mp4" />
-            </video> 
+            @if (Datum.Filetype.StartsWith("video/"))
+            {
+                <video class="videopreview" height="240" width="427" controls>
+                    <source src="@($"/{Constants.DatumFileDirectory}/{Datum.Filename}")" type="@Datum.Filetype" />
+                    </video>
+            }
+            @if (Datum.Filetype.StartsWith("image/"))
+            {
+                <img class="imagepreview" height="240" width="427" src="@($"/{Constants.DatumFileDirectory}/{Datum.Filename}")" />
+            }
         </div>
     </div>
     <hr />
