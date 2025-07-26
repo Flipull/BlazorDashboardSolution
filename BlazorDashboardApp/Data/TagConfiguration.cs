@@ -18,9 +18,9 @@ namespace BlazorDashboardApp.Data
             builder.Property(t => t.TagString)
                    .IsRequired()
                    .HasMaxLength(32);
-            builder.HasOne(t => t.Data)
+            builder.HasOne(t => t.Datum)
                    .WithMany(f => f.Tags)
-                   .HasForeignKey(t => t.DataId)
+                   .HasForeignKey(t => t.DatumId)
                    .OnDelete(DeleteBehavior.NoAction);
 
 

@@ -10,8 +10,8 @@ namespace BlazorDashboardApp.Data
     public class Tag
     {
         public int Id { get; set; }
-        public int DataId { get; set; }
-        public virtual Data Data { get; set; }
+        public int DatumId { get; set; }
+        public virtual Datum Datum { get; set; }
         public string TagString { get; set; }
 
 

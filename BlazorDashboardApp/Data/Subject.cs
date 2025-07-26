@@ -15,7 +15,7 @@ namespace BlazorDashboardApp.Data
         public string Description{ get; set; }
         public string Photofile { get; set; }
 
-        public virtual ICollection<Data> Data { get; set; } = new List<Data>();
+        public virtual ICollection<Datum> Datum { get; set; } = new List<Datum>();
 
         public Subject()
         {

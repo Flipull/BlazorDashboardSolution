@@ -8,11 +8,11 @@ using System.Threading.Tasks;
 
 namespace BlazorDashboardApp.Data
 {
-    class DataConfiguration : IEntityTypeConfiguration<Data>
+    class DatumConfiguration : IEntityTypeConfiguration<Datum>
     {
-        public void Configure(EntityTypeBuilder<Data> builder)
+        public void Configure(EntityTypeBuilder<Datum> builder)
         {
-            builder.ToTable("Data");
+            builder.ToTable("Datum");
 
             builder.HasKey(k => k.Id);
             builder.Property(f => f.Filetype)
@@ -22,7 +22,7 @@ namespace BlazorDashboardApp.Data
                    .IsRequired()
                    .HasMaxLength(100);
             builder.HasOne(f => f.Subject)
-                   .WithMany(s => s.Data)
+                   .WithMany(s => s.Datum)
                    .HasForeignKey(f => f.SubjectId)
                    .OnDelete(DeleteBehavior.NoAction);
 

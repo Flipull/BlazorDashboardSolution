@@ -10,8 +10,8 @@ namespace BlazorDashboardApp.Data
     public class Transcript
     {
         public int Id { get; set; }
-        public int DataId { get; set; }
-        public virtual Data Data { get; set; }
+        public int DatumId { get; set; }
+        public virtual Datum Datum { get; set; }
         public string TranscriptString { get; set; }
         
 
@@ -19,7 +19,7 @@ namespace BlazorDashboardApp.Data
         public DateTime? DeletedDate { get; set; }
         public string? DeletedByUserId { get; set; }
         public virtual IdentityUser DeletedByUser { get; set; }
-
+        
         public Transcript()
         {
             

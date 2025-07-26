@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace BlazorDashboardApp.Data
 {
-    public class Data
+    public class Datum
     {
         public int Id { get; set; }
 
@@ -27,7 +27,7 @@ namespace BlazorDashboardApp.Data
         public string? DeletedByUserId { get; set; }
         public virtual IdentityUser DeletedByUser { get; set; }
 
-        public Data()
+        public Datum()
         {
             
         }
