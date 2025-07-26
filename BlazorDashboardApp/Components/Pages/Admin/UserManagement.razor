@@ -13,7 +13,7 @@
 
 <h1>User Management</h1>
 
-@if (users == null)
+@if (users is null)
 {
     <p>Loading users...</p>
 }
@@ -77,10 +77,10 @@ else
 @code {
     private List<IdentityUser> users;
     private Dictionary<IdentityUser, List<string>> userRoles;
-    private string newEmail;
-    private string newPassword;
-    private string statusMessage;
-    private string errorMessage;
+    private string newEmail = string.Empty;
+    private string newPassword = string.Empty;
+    private string statusMessage = string.Empty;
+    private string errorMessage = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
