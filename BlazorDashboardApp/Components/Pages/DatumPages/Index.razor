@@ -1,0 +1,39 @@
+﻿@page "/datum/index"
+
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Roles = "Editor")]
+
+@using BlazorDashboardApp.Services
+@inject DatumService DatumService
+@using BlazorDashboardApp.ViewModels
+
+@using Microsoft.AspNetCore.Components.QuickGrid
+
+<PageTitle>Index</PageTitle>
+
+<h1>Index</h1>
+
+<p>
+    <a href="datum/create">Create New</a>
+</p>
+
+<QuickGrid Class="table" Items="datumQueryable">
+    <PropertyColumn Property="datum => datum.Filename" />
+    <PropertyColumn Property="datum => datum.Filetype" />
+
+    <TemplateColumn Context="datum">
+        <a href="@($"datum/edit?id={datum.Id}")">Edit</a>
+    </TemplateColumn>
+</QuickGrid>
+
+@code {
+    [SupplyParameterFromQuery]
+    private int? subjectId { get; set; }
+
+    private IQueryable<DatumViewModel> datumQueryable;
+    
+    protected override void OnInitialized()
+    {
+        datumQueryable = DatumService.GetAllQueryable(subjectId);
+    }
+}

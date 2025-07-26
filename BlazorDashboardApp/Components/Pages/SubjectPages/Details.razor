@@ -30,6 +30,7 @@
             <dd class="col-sm-10">@subject.Photofile</dd>
         </dl>
         <div>
+            <a href="@($"/datum/index?subjectid={subject.Id}")">Show Data</a> |
             <a href="@($"/subject/edit?id={subject.Id}")">Edit</a> |
             <a href="@($"/subject")">Back to List</a>
         </div>
