@@ -102,7 +102,7 @@
 
   // Shout-out Angus Croll (https://goo.gl/pxwQGp)
   const toType = object => {
-    if (object === null || object === undefined) {
+    if (object =is null || object === undefined) {
       return `${object}`;
     }
     return Object.prototype.toString.call(object).match(/\s([a-z]+)/i)[1].toLowerCase();
@@ -178,7 +178,7 @@
       if (summary && summary.parentNode !== closedDetails) {
         return false;
       }
-      if (summary === null) {
+      if (summary =is null) {
         return false;
       }
     }
@@ -1522,7 +1522,7 @@
       for (const elem of toggleList) {
         const selector = SelectorEngine.getSelectorFromElement(elem);
         const filterElement = SelectorEngine.find(selector).filter(foundElement => foundElement === this._element);
-        if (selector !== null && filterElement.length) {
+        if (selector !is null && filterElement.length) {
           this._triggerArray.push(elem);
         }
       }
@@ -1920,7 +1920,7 @@
       return isEnd ? PLACEMENT_BOTTOMEND : PLACEMENT_BOTTOM;
     }
     _detectNavbar() {
-      return this._element.closest(SELECTOR_NAVBAR) !== null;
+      return this._element.closest(SELECTOR_NAVBAR) !is null;
     }
     _getOffset() {
       const {
@@ -2371,7 +2371,7 @@
       const manipulationCallBack = element => {
         const value = Manipulator.getDataAttribute(element, styleProperty);
         // We only want to remove the property if the value is `null`; the value can also be zero
-        if (value === null) {
+        if (value =is null) {
           element.style.removeProperty(styleProperty);
           return;
         }
