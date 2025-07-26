@@ -7,9 +7,11 @@ namespace BlazorDashboardApp.Globals
     {
         static public long MaxDatumUploadSize = 50 * 1024 * 1024;//50MB
         static public long MaxPhotoUploadSize = 1 * 1024 * 1024;//1MB
-        static public string WwwRoot = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
-        static public string DatumFileDirectory = Path.Combine(WwwRoot, "Data");
-        static public string PhotoFileDirectory = Path.Combine(WwwRoot, "Photos");
+        static public string LocalWwwRootDirectory = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
+        static public string DatumFileDirectory = "Data";
+        static public string PhotoFileDirectory = "Photos";
+        static public string LocalDatumFileDirectory = Path.Combine(LocalWwwRootDirectory, DatumFileDirectory);
+        static public string LocalPhotoFileDirectory = Path.Combine(LocalWwwRootDirectory, PhotoFileDirectory);
 
         static public List<Char> ReservedTagCharacters = new List<Char> { '!', '+', '-', '=', '@', '#', ':' };
         
@@ -17,10 +19,10 @@ namespace BlazorDashboardApp.Globals
         {
             try
             {
-                if (!Directory.Exists(DatumFileDirectory))
-                    Directory.CreateDirectory(DatumFileDirectory);
-                if (!Directory.Exists(PhotoFileDirectory))
-                    Directory.CreateDirectory(PhotoFileDirectory);
+                if (!Directory.Exists(LocalDatumFileDirectory))
+                    Directory.CreateDirectory(LocalDatumFileDirectory);
+                if (!Directory.Exists(LocalPhotoFileDirectory))
+                    Directory.CreateDirectory(LocalPhotoFileDirectory);
             }
             catch {
                 throw;
