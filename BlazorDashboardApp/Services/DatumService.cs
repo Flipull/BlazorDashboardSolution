@@ -43,6 +43,19 @@ namespace BlazorDashboardApp.Services
 
             return datumViewModelMapper.Map(datum);
         }
+
+        public IQueryable<DatumViewModel> GetAllQueryable(int? subjectid)
+        {
+            if (subjectid is null || subjectService.Get(subjectid) is null)
+                throw new ArgumentException();
+
+            var dataViewModelQueryable
+                = repository.Datum.Where(d => d.SubjectId == subjectid)
+                                    .OrderBy(d => d.Id)
+                                    .Select(d=> datumViewModelMapper.Map(d))
+                                    .AsQueryable();
+            return dataViewModelQueryable;
+        }
         public async Task<DatumViewModel> Create(DatumViewModel datumvm)
         {
             if (!await userService.CurrentUserHasRole("Editor"))
@@ -52,7 +65,7 @@ namespace BlazorDashboardApp.Services
                 throw new ArgumentException();
 
             string datumFileName = CreateDatumFilenameComplete(datumvm);
-            string datumFilePath = Path.Combine(Constants.DatumFileDirectory, datumFileName);
+            string datumFilePath = Path.Combine(Constants.LocalDatumFileDirectory, datumFileName);
 
             if (datumvm.UploadableDatum.Size > Constants.MaxDatumUploadSize)
                 throw new InvalidDataException($"Datumfile is too large (Max {Constants.MaxDatumUploadSize / 1024 / 1024} MB)");
@@ -161,7 +174,7 @@ namespace BlazorDashboardApp.Services
                 throw new ArgumentException();
 
 
-            string datumFilePath = Path.Combine(Constants.DatumFileDirectory, datum.Filename);
+            string datumFilePath = Path.Combine(Constants.LocalDatumFileDirectory, datum.Filename);
             File.Delete(datumFilePath);
 
             repository.Datum.Remove(datum);//remove item we fetched
