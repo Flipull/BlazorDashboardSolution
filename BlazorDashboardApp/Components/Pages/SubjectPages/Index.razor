@@ -1,0 +1,40 @@
+﻿@page "/subject"
+
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Roles = "Editor")]
+
+@using BlazorDashboardApp.Services
+@inject SubjectService SubjectService
+@using BlazorDashboardApp.ViewModels
+
+@using Microsoft.AspNetCore.Components.QuickGrid
+
+<PageTitle>Index</PageTitle>
+
+<h1>Index</h1>
+
+<p>
+    <a href="subject/create">Create New</a>
+</p>
+
+<QuickGrid Class="table" Items="subjectQueryable">
+    <PropertyColumn Property="subject => subject.Name" />
+    <PropertyColumn Property="subject => subject.Description" />
+    <PropertyColumn Property="subject => subject.Photofile" />
+
+    <TemplateColumn Context="subject">
+        <a href="@($"subject/edit?id={subject.Id}")">Edit</a> |
+        <a href="@($"subject/details?id={subject.Id}")">Details</a> |
+        <a href="@($"subject/delete?id={subject.Id}")">Delete</a>
+    </TemplateColumn>
+</QuickGrid>
+
+@code {
+
+    IQueryable<SubjectViewModel> subjectQueryable;
+    
+    protected override void OnInitialized()
+    {
+        subjectQueryable = SubjectService.GetAllQueryable();
+    }
+}

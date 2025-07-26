@@ -1,0 +1,106 @@
+﻿@page "/subject/create"
+@rendermode InteractiveServer
+
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Roles = "Admin")]
+
+@inject NavigationManager NavigationManager
+
+@using BlazorDashboardApp.Services
+@inject SubjectService SubjectService
+@using BlazorDashboardApp.ViewModels
+
+<PageTitle>Create</PageTitle>
+
+<!--
+<h1>Create</h1>
+
+<h2>Subject</h2>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <EditForm method="post" Model="Subject" OnValidSubmit="AddSubject" FormName="create" Enhance>
+            <DataAnnotationsValidator />
+            <ValidationSummary class="text-danger" role="alert"/>
+            <div class="mb-3">
+                <label for="name" class="form-label">Name:</label> 
+                <InputText id="name" @bind-Value="Subject.Name" class="form-control" /> 
+                <ValidationMessage For="() => Subject.Name" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="description" class="form-label">Description:</label> 
+                <InputText id="description" @bind-Value="Subject.Description" class="form-control" /> 
+                <ValidationMessage For="() => Subject.Description" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="photofile" class="form-label">Photofile:</label> 
+                <InputText id="photofile" @bind-Value="Subject.Photofile" class="form-control" /> 
+                <ValidationMessage For="() => Subject.Photofile" class="text-danger" /> 
+            </div>        
+            <button type="submit" class="btn btn-primary">Create</button>
+        </EditForm>
+    </div>
+</div>
+
+<div>
+    <a href="/subjects">Back to List</a>
+</div>
+
+@code {
+    [SupplyParameterFromForm]
+    private Subject Subject { get; set; } = new();
+
+    // To protect from overposting attacks, see https://learn.microsoft.com/aspnet/core/blazor/forms/#mitigate-overposting-attacks.
+    private async Task AddSubject()
+    {
+        using var context = DbFactory.CreateDbContext();
+        context.Subject.Add(Subject);
+        await context.SaveChangesAsync();
+        NavigationManager.NavigateTo("/subjects");
+    }
+}
+
+-->
+
+<h3>Add New Subject</h3>
+
+<EditForm Model="@NewSubject" OnValidSubmit="HandleSubmit" FormName="create">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <div class="col-md-4">
+        <div class="mb-3">
+            <label>Name:</label>
+            <InputText @bind-Value="NewSubject.Name" class="form-control" />
+            <ValidationMessage For="@(() => NewSubject.Name)" />
+        </div>
+
+        <div class="mb-3">
+            <label>Description:</label>
+            <InputTextArea @bind-Value="NewSubject.Description" class="form-control" />
+            <ValidationMessage For="@(() => NewSubject.Description)" />
+        </div>
+
+        <div class="mb-3">
+            <label>Upload Image:</label>
+            <InputFile OnChange="HandleFileChange" />
+            <ValidationMessage For="@(() => NewSubject.UploadablePhoto)" />
+        </div>
+
+        <button class="btn btn-primary" type="submit">Submit</button>
+    </div>
+</EditForm>
+
+@code {
+    private SubjectViewModel NewSubject = new();
+
+    private void HandleFileChange(InputFileChangeEventArgs e)
+    {
+        NewSubject.UploadablePhoto = e.File;
+    }
+
+    private async Task HandleSubmit()
+    {
+        var new_subject = await SubjectService.Create(NewSubject);
+        NavigationManager.NavigateTo($"/subjects/edit?id={new_subject.Id}"); // adjust as needed
+    }
+}

@@ -1,0 +1,179 @@
+﻿@page "/datum/edit"
+@rendermode InteractiveServer
+
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Roles = "Editor")]
+
+@inject NavigationManager NavigationManager
+
+@using BlazorDashboardApp.Services
+@inject DatumService DatumService
+@inject TranscriptService TranscriptService
+@inject TagService TagService
+@using BlazorDashboardApp.Data
+@using BlazorDashboardApp.ViewModels
+
+<PageTitle>Edit</PageTitle>
+
+<h1>Edit Datum</h1>
+<hr />
+@if (Datum is null || Transcriptlist is null || Taglist is null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+<!--
+    <div class="row">
+        <div class="col-md-4">
+            <EditForm method="post" Model="Subject" OnValidSubmit="UpdateSubject" FormName="edit" Enhance>
+                <DataAnnotationsValidator />
+                <ValidationSummary role="alert"/>
+                <input type="hidden" name="Subject.Id" value="@Subject.Id" />
+                <div class="mb-3">
+                    <label for="name" class="form-label">Name:</label>
+                    <InputText id="name" @bind-Value="Subject.Name" class="form-control" />
+                    <ValidationMessage For="() => Subject.Name" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="description" class="form-label">Description:</label>
+                    <InputText id="description" @bind-Value="Subject.Description" class="form-control" />
+                    <ValidationMessage For="() => Subject.Description" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="photofile" class="form-label">Photofile:</label>
+                    <InputText id="photofile" @bind-Value="Subject.Photofile" class="form-control" />
+                    <ValidationMessage For="() => Subject.Photofile" class="text-danger" />
+                </div>
+                <button type="submit" class="btn btn-primary">Save</button>
+            </EditForm>
+        </div>
+    </div>
+-->
+
+
+    <div class="my-4">
+        <div id="datumpreview">
+            <video class="videopreview" height="320" width="570" controls>
+                <source src="" type="video/mp4" />
+            </video> 
+        </div>
+    </div>
+    <hr />
+    <div id="tagedit" class="row">
+        <div class="col-md-4">
+            <EditForm method="post" Model="NewTag" OnValidSubmit="CreateTag" FormName="createtag" Enhance>
+                <DataAnnotationsValidator />
+                <ValidationSummary role="alert" />
+                <input type="hidden" name="NewTag.DatumId" value="@Datum.Id" />
+                <label for="tagstring" class="form-label">Add Tag:</label>
+                <InputText id="tagstring" @bind-Value="NewTag.TagString"
+                           autocomplete="off" class="form-control" />
+                <button class="btn btn-primary my-1" type="submit">Submit</button>
+                <ValidationMessage For="() => NewTag.TagString" class="text-danger" />
+            </EditForm>
+        </div>
+        <div id="transcriptedit" class="col-md-8">
+            <EditForm method="post" Model="NewTranscript" OnValidSubmit="CreateTranscript" FormName="createtranscript" Enhance>
+                <DataAnnotationsValidator />
+                <ValidationSummary role="alert" />
+                <input type="hidden" name="NewTranscript.DatumId" value="@Datum.Id" />
+                <label for="transcriptstring" class="form-label">Add Transcript:</label>
+                <InputText id="transcriptstring" @bind-Value="NewTranscript.TranscriptString"
+                           autocomplete="off" class="form-control" />
+                <ValidationMessage For="() => NewTranscript.TranscriptString" class="text-danger" />
+                <button class="btn btn-primary my-1" type="submit">Submit</button>
+            </EditForm>
+        </div>
+    </div>
+    <hr />
+    <div class="row">
+        <div id="taglist" class="col-md-4">
+            @foreach (var tag in Taglist)
+            {
+                <div class="taglistitem my-2 mx-2">
+                    <div class="px-2">@tag.TagString</div>
+                    <button @onclick="() => RemoveTag(tag.Id)">×</button>
+                </div>
+            }
+        </div>
+        <div id="transcriptlist" class="col-md-8">
+            @foreach (var transcript in Transcriptlist)
+            {
+                <div class="transcriptlistitem my-2 mx-2">
+                    <div class="transcriptlisttext px-2">@transcript.TranscriptString</div>
+                    <button @onclick="() => RemoveTranscript(transcript.Id)">×</button>
+                </div>
+
+            }
+        </div>
+    </div>
+}
+
+
+
+
+@code {
+    [SupplyParameterFromQuery]
+    private int Id { get; set; }
+
+
+    private DatumViewModel? Datum { get; set; }
+    [SupplyParameterFromForm]
+    private TagViewModel NewTag { get; set; } = new TagViewModel();
+    [SupplyParameterFromForm]
+    private TranscriptViewModel NewTranscript { get; set; } = new TranscriptViewModel();
+    private ICollection<TranscriptViewModel>? Transcriptlist { get; set; }
+    private ICollection<TagViewModel>? Taglist { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadDatum();
+        /*
+        if (Subject is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+            }
+        */
+    }
+    private async Task LoadDatum()
+    {
+        //get datum
+        Datum = await DatumService.Get(Id);
+        //get list of datum it's transcripts
+        Transcriptlist = await TranscriptService.GetAll(Id);
+        //get list of datum it's tags
+        Taglist = await TagService.GetAll(Id);
+
+        //somehow binding the hidden value automatically doesn't work... like, wtf?
+        NewTag = new TagViewModel() { DatumId = Datum.Id };
+        NewTranscript = new TranscriptViewModel() { DatumId = Datum.Id };
+    }
+
+    private async Task CreateTag()
+    {
+        await TagService.Create(NewTag);
+        await LoadDatum();
+        //NavigationManager.NavigateTo($"/datum/edit?id={Id}");
+    }
+    private async Task CreateTranscript()
+    {
+        await TranscriptService.Create(NewTranscript);
+        await LoadDatum();
+        //NavigationManager.NavigateTo($"/datum/edit?id={Id}");
+    }
+
+    private async void RemoveTag(int? tagid)
+    {
+        await TagService.Delete(tagid);
+        await LoadDatum();
+        StateHasChanged();//instead of refreshing/reloading the whole state, just remove the item from the list and the UI will be uptodate
+    }
+    private async void RemoveTranscript(int? transcriptid)
+    {
+        await TagService.Delete(transcriptid);
+        await LoadDatum();
+        StateHasChanged();//instead of refreshing/reloading the whole state, just remove the item from the list and the UI will be uptodate
+    }
+
+}

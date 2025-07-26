@@ -1,0 +1,124 @@
+﻿@page "/datum/create"
+@rendermode InteractiveServer
+
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Roles = "Editor")]
+
+@inject NavigationManager NavigationManager
+
+@using BlazorDashboardApp.Services
+@inject SubjectService SubjectService
+@inject DatumService DatumService
+@using BlazorDashboardApp.ViewModels
+
+<PageTitle>Create</PageTitle>
+
+<!--
+<h1>Create</h1>
+
+<h2>Subject</h2>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <EditForm method="post" Model="Subject" OnValidSubmit="AddSubject" FormName="create" Enhance>
+            <DataAnnotationsValidator />
+            <ValidationSummary class="text-danger" role="alert"/>
+            <div class="mb-3">
+                <label for="name" class="form-label">Name:</label> 
+                <InputText id="name" @bind-Value="Subject.Name" class="form-control" /> 
+                <ValidationMessage For="() => Subject.Name" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="description" class="form-label">Description:</label> 
+                <InputText id="description" @bind-Value="Subject.Description" class="form-control" /> 
+                <ValidationMessage For="() => Subject.Description" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="photofile" class="form-label">Photofile:</label> 
+                <InputText id="photofile" @bind-Value="Subject.Photofile" class="form-control" /> 
+                <ValidationMessage For="() => Subject.Photofile" class="text-danger" /> 
+            </div>        
+            <button type="submit" class="btn btn-primary">Create</button>
+        </EditForm>
+    </div>
+</div>
+
+<div>
+    <a href="/subjects">Back to List</a>
+</div>
+
+@code {
+    [SupplyParameterFromForm]
+    private Subject Subject { get; set; } = new();
+
+    // To protect from overposting attacks, see https://learn.microsoft.com/aspnet/core/blazor/forms/#mitigate-overposting-attacks.
+    private async Task AddSubject()
+    {
+        using var context = DbFactory.CreateDbContext();
+        context.Subject.Add(Subject);
+        await context.SaveChangesAsync();
+        NavigationManager.NavigateTo("/subjects");
+    }
+}
+
+-->
+
+@if (Subjectlist is null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+    {
+    <h3>Add New Datum</h3>
+
+    <EditForm Model="@NewDatum" OnValidSubmit="HandleSubmit" FormName="create">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+        <div class="col-md-4">
+            <label>Upload Video or Image:</label>
+            <div class="mb-3">
+                <select @onchange="OnSubjectChange">
+                    <option value=""></option>
+                    @foreach (var subject in Subjectlist)
+                    {
+                        <option value="@subject.Id">@subject.Name</option>
+                    }
+                </select>
+            </div>
+            <div class="mb-3">
+                <InputFile OnChange="HandleFileChange" />
+                <ValidationMessage For="@(() => NewDatum.UploadableDatum)" />
+            </div>
+
+            <button class="btn btn-primary" type="submit">Submit</button>
+        </div>
+    </EditForm>
+}
+
+
+
+@code {
+    private DatumViewModel NewDatum = new();
+    private ICollection<SubjectViewModel> Subjectlist;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Subjectlist = await SubjectService.GetAll();
+    }
+
+    private void OnSubjectChange(ChangeEventArgs e)
+    {
+        NewDatum.SubjectId = int.Parse(e.Value!.ToString()!);
+    }
+    
+    private void HandleFileChange(InputFileChangeEventArgs e)
+    {
+        NewDatum.UploadableDatum = e.File;
+    }
+
+    private async Task HandleSubmit()
+    {
+        var newdatum = await DatumService.Create(NewDatum);
+        NavigationManager.NavigateTo($"/datum/edit?id={newdatum.Id}");
+    }
+}
