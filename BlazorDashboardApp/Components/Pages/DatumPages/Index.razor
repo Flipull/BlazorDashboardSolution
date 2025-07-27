@@ -1,4 +1,4 @@
-﻿@page "/datum/index"
+﻿@page "/datum"
 
 @using Microsoft.AspNetCore.Authorization
 @attribute [Authorize(Roles = "Editor")]
@@ -32,8 +32,8 @@
 
     private IQueryable<DatumViewModel> datumQueryable;
     
-    protected override void OnInitialized()
+    protected override async void OnInitialized()
     {
-        datumQueryable = DatumService.GetAllQueryable(subjectId);
+        datumQueryable = await DatumService.GetAllQueryable(subjectId);
     }
 }

@@ -25,7 +25,7 @@
     <TemplateColumn Context="subject">
         <a href="@($"subject/edit?id={subject.Id}")">Edit</a> |
         <a href="@($"subject/details?id={subject.Id}")">Details</a> |
-        <a href="@($"/datum/index?subjectid={subject.Id}")">Data Index</a> |
+        <a href="@($"/datum?subjectid={subject.Id}")">Data Index</a> |
         <a href="@($"subject/delete?id={subject.Id}")">Delete</a>
     </TemplateColumn>
 </QuickGrid>
@@ -34,8 +34,8 @@
 
     private IQueryable<SubjectViewModel> subjectQueryable;
     
-    protected override void OnInitialized()
+    protected override async void OnInitialized()
     {
-        subjectQueryable = SubjectService.GetAllQueryable();
+        subjectQueryable = await SubjectService.GetAllQueryable();
     }
 }
