@@ -9,11 +9,11 @@ namespace BlazorDashboardApp.Data
         {
             if (value is string tagstring)
             {
-                if (Constants.ReservedTagCharacters.Contains(tagstring[0]) {
+                if (Constants.TagReservedCharacters.Contains(tagstring[0])) {
                     return ValidationResult.Success;
                 }
             }
-            return new ValidationResult($"The first character must be one of the following: {string.Join("", Constants.ReservedTagCharacters)}");
+            return new ValidationResult($"The first character must be one of the following: {string.Join("", Constants.TagReservedCharacters)}");
         }
     }
 }

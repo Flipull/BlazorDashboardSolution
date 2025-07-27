@@ -10,7 +10,7 @@ namespace BlazorDashboardApp.Data
         {
             if (value is string tagstring)
             {
-                if (Regex.IsMatch(tagstring, @"^.[a-zA-Z0-9 ]+$") ) {
+                if (Regex.IsMatch(tagstring, Constants.TagFormat) ) {
                     return ValidationResult.Success;
                 }
             }
