@@ -1,9 +1,11 @@
 ﻿using BlazorDashboardApp.Data;
+using BlazorDashboardApp.Globals;
 using BlazorDashboardApp.Mappers;
 using BlazorDashboardApp.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using NuGet.Protocol.Core.Types;
+using System.Text.RegularExpressions;
 
 namespace BlazorDashboardApp.Services
 {
@@ -27,6 +29,12 @@ namespace BlazorDashboardApp.Services
             datumService = datum_service;
             tagMapper = tag_mapper;
             tagViewModelMapper = tagvm_mapper;
+        }
+
+        public bool IsValidTag(string tagstring)
+        {
+            return tagstring.Length >= 3 && Constants.TagReservedCharacters.Contains(tagstring[0])
+                    && Regex.IsMatch(tagstring, Constants.TagFormat);
         }
 
         public async Task<TagViewModel> Get(int? tagid, bool includeDeleted = false)
@@ -91,7 +99,8 @@ namespace BlazorDashboardApp.Services
             if (!await userService.CurrentUserHasRole("Editor"))
                 throw new AccessViolationException();
             
-            if (tagvm.DatumId is null || await datumService.Get(tagvm.DatumId) is null || String.IsNullOrWhiteSpace(tagvm.TagString))
+            if (tagvm.DatumId is null || await datumService.Get(tagvm.DatumId) is null 
+                    || String.IsNullOrWhiteSpace(tagvm.TagString) || !IsValidTag(tagvm.TagString) )
                 throw new ArgumentException();
 
             //if tag already exists
