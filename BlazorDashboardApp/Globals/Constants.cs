@@ -12,9 +12,11 @@ namespace BlazorDashboardApp.Globals
         static public string PhotoFileDirectory = "Photos";
         static public string LocalDatumFileDirectory = Path.Combine(LocalWwwRootDirectory, DatumFileDirectory);
         static public string LocalPhotoFileDirectory = Path.Combine(LocalWwwRootDirectory, PhotoFileDirectory);
-
-        static public List<Char> ReservedTagCharacters = new List<Char> { '!', '+', '-', '=', '@', '#', ':' };
         
+        //!subject +posclaim -negclaim =anyclain @mentionedperson #subjectstate : %mentioneddate <beforedate >afterdate
+        static public List<Char> TagReservedCharacters = 
+                new List<Char> {/* '!',*/ '+', '-', '=', '@', '#', ':', '%' };
+        static public string TagFormat = @"^.[a-zA-Z0-9 ]+$";
         static public void CreatePrerequisiteFileStructure()
         {
             try
