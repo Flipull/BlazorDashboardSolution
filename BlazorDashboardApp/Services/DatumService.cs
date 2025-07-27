@@ -44,9 +44,9 @@ namespace BlazorDashboardApp.Services
             return datumViewModelMapper.Map(datum);
         }
 
-        public IQueryable<DatumViewModel> GetAllQueryable(int? subjectid)
+        public async Task<IQueryable<DatumViewModel>> GetAllQueryable(int? subjectid)
         {
-            if (subjectid is null || subjectService.Get(subjectid) is null)
+            if (subjectid is null || await subjectService.Get(subjectid) is null)
                 throw new ArgumentException();
 
             var dataViewModelQueryable

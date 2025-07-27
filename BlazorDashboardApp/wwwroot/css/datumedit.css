@@ -20,7 +20,9 @@
     color: red;
     align-self: flex-end;
 }
-
+#taglist > .taglistitem > button:hover {
+    background-color: ghostwhite;
+}
 #transcriptedit {
 }
 
@@ -28,12 +30,16 @@
     background-color: lavender;
     display: flex;
 }
-    #transcriptlist > .transcriptlistitem > .transcriptlisttext {
-        width: 100%;
-    }
+#transcriptlist > .transcriptlistitem > .transcriptlisttext {
+    width: 100%;
+}
 #transcriptlist > .transcriptlistitem > button {
     border: 0px;
     background-color: lavender;
     color: red;
     float: right;
+}
+
+#transcriptlist > .transcriptlistitem > button:hover {
+    background-color: ghostwhite;
 }

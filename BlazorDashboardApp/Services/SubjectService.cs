@@ -39,9 +39,9 @@ namespace BlazorDashboardApp.Services
         }
         public async Task<ICollection<SubjectViewModel>> GetAll()
         {
-            return await GetAllQueryable().ToListAsync();
+            return await (await GetAllQueryable()).ToListAsync();
         }
-        public IQueryable<SubjectViewModel> GetAllQueryable()
+        public async Task<IQueryable<SubjectViewModel>> GetAllQueryable()
         {
             var subjectViewModelQueryable
                 = repository.Subject.OrderBy(s => s.Name)
