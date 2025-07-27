@@ -16,6 +16,8 @@ namespace BlazorDashboardApp.Data
         public int SubjectId { get; set; }
         public virtual Subject Subject { get; set; }
 
+        public DateTime CreationDate { get; set; };
+
         public string Filetype { get; set; }
         public string Filename { get; set; }
 

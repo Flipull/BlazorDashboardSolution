@@ -15,6 +15,9 @@ namespace BlazorDashboardApp.Data
             builder.ToTable("Datum");
 
             builder.HasKey(k => k.Id);
+            builder.Property(f => f.CreationDate)
+                    .IsRequired();
+
             builder.Property(f => f.Filetype)
                    .IsRequired()
                    .HasMaxLength(16);

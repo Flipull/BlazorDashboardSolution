@@ -87,6 +87,7 @@ namespace BlazorDashboardApp.Services
             var datum = new Datum
             {
                 SubjectId = datumvm.SubjectId.Value,
+                CreationDate = DateTime.Now,
                 Filetype = datumvm.UploadableDatum.ContentType,
                 Filename = datumFileName
             };
